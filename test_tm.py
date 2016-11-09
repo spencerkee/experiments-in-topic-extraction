@@ -22,7 +22,7 @@ def create_document_list(movie_id_to_rating,user_rating_history):
     for movie in movies:#can be range(num_movies), for every movie
         doc_tags_list = []
         for user_rating in movie_id_to_rating[movie]:
-            if float(user_rating[1]) >= 4.0:
+            if float(user_rating[1]) >= 4:
                 for rated_movie in user_rating_history[user_rating[0]]:
                     if rated_movie[0] == movie or (float(rated_movie[1]) >= 4): #don't want to have cyclical associations
                         continue
@@ -31,8 +31,8 @@ def create_document_list(movie_id_to_rating,user_rating_history):
         doc_set.append(doc_tags_list)
     # doc_set = []
     #for every movie:
-    #for every user who rated the movie over 3:
-    #for every movie that user has rated over 3:
+    #for every user who rated the movie over x:
+    #for every movie that user has rated over x:
     #add that movie to that movie's document (1) times
     return doc_set
 
