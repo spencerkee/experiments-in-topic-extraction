@@ -35,7 +35,7 @@ def create_document_list():
     # #for every movie:
     # #for every user who rated the movie over 3:
     # #for every movie that user has rated over 3:
-    # #add that movie to the document (1) times
+    # #add that movie to that movie's document (1) times
     return doc_set, movie_id_to_movie
 
 def replace_movie_id_with_name(string,movie_id_to_movie):
@@ -51,6 +51,7 @@ def replace_movie_id_with_name(string,movie_id_to_movie):
 def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
     topic_num = 20
     passes_num = 20
+    designation = str(topic_num) + "_" + str(passes_num)
 
     #1 second
     movie_id_to_movie = create_movie_id_to_movie() #movie id: movie title
@@ -77,7 +78,8 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
         corpus = [dictionary.doc2bow(text) for text in texts]
         if save: pickle.dump(corpus, open( "corpus.p", "wb" ))
 
-    lda_savename = "ldamodel" + str(topic_num) + "_" + str(passes_num) + ".p"
+
+    lda_savename = "ldamodel" + designation + ".p"
     if 'ldamodel' in load:
         ldamodel = pickle.load(open(lda_savename, "rb" ))
     else:
@@ -86,8 +88,12 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
         if save: pickle.dump(ldamodel, open(lda_savename, "wb" ))
 
     topics = ldamodel.print_topics(num_topics=topic_num, num_words=6)
-    for topic in topics:
-        print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
+
+    filename = 'results' + designation
+    with open(filename,'wb') as f:
+        for topic in topics:
+            f.write(topic[0] + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
+            # print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
 
 #num_topics=20, passes=20
 
