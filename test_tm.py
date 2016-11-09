@@ -50,7 +50,7 @@ def replace_movie_id_with_name(string,movie_id_to_movie):
 
 def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
     topic_num = 20
-    passes_num = 20
+    passes_num = 40
     designation = str(topic_num) + "_" + str(passes_num)
 
     #1 second
@@ -95,7 +95,5 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
             f.write(topic[0] + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
             # print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
 
-#num_topics=20, passes=20
-
 if __name__ == '__main__':
-    main(load=['texts','dictionary', 'corpus'],save=True)
+    main(load=[],save=True)
