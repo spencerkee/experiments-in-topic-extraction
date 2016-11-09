@@ -1,9 +1,10 @@
-from gensim import corpora, models#
+from gensim import corpora, models
 import gensim
 import pickle
 from process_files import create_user_rating_history, create_movie_id_to_movie
 import unicodedata
 import sys
+import time
 
 def create_movie_id_to_rating(user_rating_history,movie_id_to_movie):
     movie_id_to_rating = {} #movie id: [(user id, rating), etc]
@@ -41,14 +42,13 @@ def create_document_list(movie_id_to_rating,user_rating_history):
 def replace_movie_id_with_name(string,movie_id_to_movie):
     string = string.split('"')
     string = [unicodedata.normalize('NFKD', i).encode('ascii','ignore') for i in string]
-    # print ('after_split',string)
     for ind,value in enumerate(string):
         if '.' not in value and len(value)>0:
             string[ind] = movie_id_to_movie[value]
-    # print ('after replace',string)
     return ''.join(string)
 
 def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,passes_num=20):
+    start_time = time.time()
     designation = str(topic_num) + "_" + str(passes_num)
 
     #1 second
@@ -56,12 +56,14 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
     user_rating_history = create_user_rating_history() #user id: [(movie id,movie rating),etc]
     movie_id_to_rating = create_movie_id_to_rating(user_rating_history,movie_id_to_movie)  #movie id: [(user id, rating), etc]
 
+    print("texts start: {} seconds".format(str(time.time()-start_time)))
     if 'texts' in load: #37 seconds
         texts = pickle.load(open( "texts"+designation+".p", "rb" ))
     else: #78 seconds
         texts = create_document_list(movie_id_to_rating,user_rating_history)
         if save: pickle.dump(texts, open( "texts"+designation+".p", "wb" ))
 
+    print("dictionary start: {} seconds".format(str(time.time()-start_time)))
     if 'dictionary' in load: #2 seconds
         dictionary = pickle.load(open("dictionary"+designation+".p", "rb" ))
     else:
@@ -69,6 +71,7 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
         dictionary = corpora.Dictionary(texts)
         if save: pickle.dump(dictionary, open("dictionary"+designation+".p", "wb" ))
 
+    print("corpus start: {} seconds".format(str(time.time()-start_time)))
     if 'corpus' in load: #172 seconds
         corpus = pickle.load(open( "corpus"+designation+".p", "rb" ))
     else: #511 seconds
@@ -76,6 +79,7 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
         corpus = [dictionary.doc2bow(text) for text in texts]
         if save: pickle.dump(corpus, open("corpus"+designation+".p", "wb" ))
 
+    print("ldamodel start: {} seconds".format(str(time.time()-start_time)))
     lda_savename = "ldamodel" + designation + ".p"
     if 'ldamodel' in load:
         ldamodel = pickle.load(open(lda_savename, "rb" ))
@@ -90,8 +94,8 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
     with open(filename,'wb') as f:
         for topic in topics:
             f.write(topic[0] + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
-            # print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
 
+    print("total time: {} seconds".format(str(time.time()-start_time)))
 if __name__ == '__main__':
     if len(sys.argv) != 4:
         sys.exit('usage [topic_num passes_num save]')
