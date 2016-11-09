@@ -14,8 +14,7 @@ def create_movie_id_to_rating(user_rating_history,movie_id_to_movie):
                 movie_id_to_rating[rating[0]] = [(user,rating[1])]
     return movie_id_to_rating
 
-def create_document_list():
-
+def create_document_list(movie_id_to_rating,user_rating_history):
     doc_set = []
     movies = sorted(movie_id_to_rating.keys()) #not movie_id_to_movie because some movies have no ratings?
     for movie in movies:#can be range(num_movies), for every movie
@@ -61,7 +60,7 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
     if 'texts' in load: #37 seconds
         texts = pickle.load(open( "texts"+designation+".p", "rb" ))
     else: #78 seconds
-        texts = create_document_list()
+        texts = create_document_list(movie_id_to_rating,user_rating_history)
         if save: pickle.dump(texts, open( "texts"+designation+".p", "wb" ))
 
     if 'dictionary' in load: #2 seconds
