@@ -3,6 +3,7 @@ import gensim
 import pickle
 from process_files import create_user_rating_history, create_movie_id_to_movie
 import unicodedata
+import sys
 
 def create_movie_id_to_rating(user_rating_history,movie_id_to_movie):
     movie_id_to_rating = {} #movie id: [(user id, rating), etc]
@@ -47,9 +48,7 @@ def replace_movie_id_with_name(string,movie_id_to_movie):
     # print ('after replace',string)
     return ''.join(string)
 
-def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
-    topic_num = 20
-    passes_num = 40
+def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num,passes_num):
     designation = str(topic_num) + "_" + str(passes_num)
 
     #1 second
@@ -94,4 +93,6 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
             # print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
 
 if __name__ == '__main__':
-    main(load=[],save=True)
+    if len(sys.argv) != 3:
+        sys.exit('usage [topic_num passes_num]')
+    main(load=[],save=True,topic_num=sys.argv[1],passes_num=sys.argv[2])
