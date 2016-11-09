@@ -48,7 +48,7 @@ def replace_movie_id_with_name(string,movie_id_to_movie):
     # print ('after replace',string)
     return ''.join(string)
 
-def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num,passes_num):
+def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,passes_num=20):
     designation = str(topic_num) + "_" + str(passes_num)
 
     #1 second
