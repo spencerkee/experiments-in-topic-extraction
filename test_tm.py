@@ -93,6 +93,10 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
             # print (topic[0], replace_movie_id_with_name(topic[1],movie_id_to_movie))
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        sys.exit('usage [topic_num passes_num]')
-    main(load=[],save=True,topic_num=int(sys.argv[1]),passes_num=int(sys.argv[2]))
+    if len(sys.argv) != 4:
+        sys.exit('usage [topic_num passes_num save]')
+    if sys.argv[3] == 'True':
+        save=True
+    else:
+        save=False
+    main(load=[],save=save,topic_num=int(sys.argv[1]),passes_num=int(sys.argv[2]))
