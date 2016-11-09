@@ -86,7 +86,7 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
 
     topics = ldamodel.print_topics(num_topics=topic_num, num_words=6)
 
-    filename = 'results' + designation1
+    filename = 'results' + designation
     with open(filename,'wb') as f:
         for topic in topics:
             f.write(topic[0] + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
