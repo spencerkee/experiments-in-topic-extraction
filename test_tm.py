@@ -36,7 +36,7 @@ def create_document_list(movie_id_to_rating,user_rating_history):
     # #for every user who rated the movie over 3:
     # #for every movie that user has rated over 3:
     # #add that movie to that movie's document (1) times
-    return doc_set, movie_id_to_movie
+    return doc_set
 
 def replace_movie_id_with_name(string,movie_id_to_movie):
     string = string.split('"')
