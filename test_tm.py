@@ -95,4 +95,4 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         sys.exit('usage [topic_num passes_num]')
-    main(load=[],save=True,topic_num=sys.argv[1],passes_num=sys.argv[2])
+    main(load=[],save=True,topic_num=int(sys.argv[1]),passes_num=int(sys.argv[2]))
