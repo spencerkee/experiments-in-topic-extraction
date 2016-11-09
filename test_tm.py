@@ -59,24 +59,24 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True):
     movie_id_to_rating = create_movie_id_to_rating(user_rating_history,movie_id_to_movie)  #movie id: [(user id, rating), etc]
 
     if 'texts' in load: #37 seconds
-        texts = pickle.load(open( "texts"+designation".p", "rb" ))
+        texts = pickle.load(open( "texts"+designation+".p", "rb" ))
     else: #78 seconds
         texts = create_document_list()
-        if save: pickle.dump(texts, open( "texts"+designation".p", "wb" ))
+        if save: pickle.dump(texts, open( "texts"+designation+".p", "wb" ))
 
     if 'dictionary' in load: #2 seconds
-        dictionary = pickle.load(open("dictionary"+designation".p", "rb" ))
+        dictionary = pickle.load(open("dictionary"+designation+".p", "rb" ))
     else:
         # turn our tokenized documents into a id <-> term dictionary
         dictionary = corpora.Dictionary(texts)
-        if save: pickle.dump(dictionary, open("dictionary"+designation".p", "wb" ))
+        if save: pickle.dump(dictionary, open("dictionary"+designation+".p", "wb" ))
 
     if 'corpus' in load: #172 seconds
-        corpus = pickle.load(open( "corpus"+designation".p", "rb" ))
+        corpus = pickle.load(open( "corpus"+designation+".p", "rb" ))
     else: #511 seconds
         # convert tokenized documents into a document-term matrix
         corpus = [dictionary.doc2bow(text) for text in texts]
-        if save: pickle.dump(corpus, open("corpus"+designation".p", "wb" ))
+        if save: pickle.dump(corpus, open("corpus"+designation+".p", "wb" ))
 
     lda_savename = "ldamodel" + designation + ".p"
     if 'ldamodel' in load:
