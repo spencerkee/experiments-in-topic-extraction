@@ -21,22 +21,19 @@ def create_document_list(movie_id_to_rating,user_rating_history):
     movies = sorted(movie_id_to_rating.keys()) #not movie_id_to_movie because some movies have no ratings?
     for movie in movies:#can be range(num_movies), for every movie
         doc_tags_list = []
-        # print (movie_id_to_rating[movie])
         for user_rating in movie_id_to_rating[movie]:
-            if float(user_rating[1]) > 3.0:
+            if float(user_rating[1]) >= 4.0:
                 for rated_movie in user_rating_history[user_rating[0]]:
-                    if rated_movie[0] == movie or (float(rated_movie[1]) > 3): #don't want to have cyclical associations
+                    if rated_movie[0] == movie or (float(rated_movie[1]) >= 4): #don't want to have cyclical associations
                         continue
                     doc_tags_list.append(rated_movie[0])
-        doc_tags_list = sorted(doc_tags_list, key=int) #possibly remove, bad for preformance and only in for visualization purposes
-        # print ('duplicates', len(doc_tags_list) != len(set(doc_tags_list)))
-        # doc_set.append(' '.join(doc_tags_list))
+        # doc_tags_list = sorted(doc_tags_list, key=int) #possibly remove, bad for preformance and only in for visualization purposes
         doc_set.append(doc_tags_list)
     # doc_set = []
-    # #for every movie:
-    # #for every user who rated the movie over 3:
-    # #for every movie that user has rated over 3:
-    # #add that movie to that movie's document (1) times
+    #for every movie:
+    #for every user who rated the movie over 3:
+    #for every movie that user has rated over 3:
+    #add that movie to that movie's document (1) times
     return doc_set
 
 def replace_movie_id_with_name(string,movie_id_to_movie):
@@ -93,7 +90,7 @@ def main(load=['texts','dictionary','corpus','ldamodel'],save=True,topic_num=20,
     filename = 'results/' + designation
     with open(filename,'wb') as f:
         for topic in topics:
-            f.write(topic[0] + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
+            f.write(str(topic[0]) + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
 
     print("total time: {} seconds".format(str(time.time()-start_time)))
 if __name__ == '__main__':
