@@ -1,4 +1,5 @@
 import pickle
+import math
 
 def create_user_rating_history():
     user_rating_history = {}
@@ -28,5 +29,18 @@ def create_movie_id_to_movie():
                 new_line_data = [line_data[0],''.join(line_data[1:-1])]
                 movie_id, title = new_line_data
                 movie_id_to_movie[movie_id] = title
-    # pickle.dump(movie_id_to_movie, open( "movie_id_to_movie.p", "wb" ))
+
     return movie_id_to_movie
+
+def cosine_similarity(v1,v2):
+    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    sumxx, sumxy, sumyy = 0, 0, 0
+    for i in range(len(v1)):
+        x = v1[i]; y = v2[i]
+        sumxx += x*x
+        sumyy += y*y
+        sumxy += x*y
+    return sumxy/math.sqrt(sumxx*sumyy)
+
+x = create_movie_id_to_movie()
+
