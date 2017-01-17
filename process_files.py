@@ -42,5 +42,3 @@ def cosine_similarity(v1,v2):
         sumxy += x*y
     return sumxy/math.sqrt(sumxx*sumyy)
 
-x = create_movie_id_to_movie()
-

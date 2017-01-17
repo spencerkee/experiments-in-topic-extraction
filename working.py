@@ -44,7 +44,15 @@ def create_document_list(movie_id_to_rating,user_rating_history,threshold=5):
         doc_set.append(doc_tags_list)
     return doc_set
 
-def evaluate_graph(dictionary, corpus, texts, limit):
+def range_list(start, limit, inc=1):
+    return_list = []
+    val = start
+    while val < limit:
+        return_list.append(val)
+        val += inc
+    return return_list
+
+def evaluate_graph(dictionary, corpus, texts, start_val, limit, step=1):
     """
     Function to display num_topics - LDA graph using c_v coherence
     
@@ -60,14 +68,18 @@ def evaluate_graph(dictionary, corpus, texts, limit):
     """
     c_v = []
     lm_list = []
-    for num_topics in range(1, limit):
+    num_topics = start_val
+    while num_topics < limit:
+        print ('Current # of topics: ' + str(num_topics))
         lm = LdaModel(corpus=corpus, num_topics=num_topics, id2word=dictionary)
-        lm_list.append(lm)
+        # lm_list.append(lm)
         cm = CoherenceModel(model=lm, texts=texts, dictionary=dictionary, coherence='c_v')
+        print (str((cm.get_coherence())))
         c_v.append(cm.get_coherence())
+        num_topics += step
         
     # Show graph
-    x = range(1, limit)
+    x = range_list(start_val, limit, step)
     plt.plot(x, c_v)
     plt.xlabel("num_topics")
     plt.ylabel("Coherence score")
@@ -77,7 +89,6 @@ def evaluate_graph(dictionary, corpus, texts, limit):
     return lm_list
 
 def main(name):
-    start_time = time.time()
     movie_id_to_movie = create_movie_id_to_movie() #movie id: movie title
     user_rating_history = create_user_rating_history() #user id: [(movie id,movie rating),etc]
     movie_id_to_rating = create_movie_id_to_rating(user_rating_history,movie_id_to_movie)  #movie id: [(user id, rating), etc]
@@ -86,10 +97,16 @@ def main(name):
     dictionary = Dictionary(texts)
     corpus = [dictionary.doc2bow(text) for text in texts]
 
-    # ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=topic_num, id2word = dictionary, passes=10)
-    # topics = ldamodel.print_topics(num_topics=topic_num, num_words=6)
-
-    lm_list = evaluate_graph(dictionary, corpus, texts, 3)
+    lm_list = evaluate_graph(dictionary, corpus, texts, 10, 101, 10)
+    # lm_list_savename = 'current_results/' + name + '.p'
+    # pickle.dump(lm_list,open(lm_list_savename, "wb"))
 
 if __name__ == '__main__':
-    main(name='test')
+    start_time = time.time()
+    main(name='10-100-step_10-large')
+    print("total time: {} seconds".format(str(time.time()-start_time)))
+
+
+
+    # ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=topic_num, id2word = dictionary, passes=10)
+    # topics = ldamodel.print_topics(num_topics=topic_num, num_words=6)
