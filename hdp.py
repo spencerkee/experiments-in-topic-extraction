@@ -105,7 +105,7 @@ def main(name):
     movie_id_to_rating = create_movie_id_to_rating(user_rating_history,movie_id_to_movie)  #movie id: [(user id, rating), etc]
 
     #active variables
-    texts = [i for i in create_document_list(movie_id_to_movie, movie_id_to_rating,user_rating_history, threshold=4) if len(i) >= 0]
+    texts = [i for i in create_document_list(movie_id_to_movie, movie_id_to_rating,user_rating_history, threshold=4) if len(i) >= 100]
     # word_counter = {}
     # for word in texts[49]:
     #     if word in word_counter:
@@ -118,8 +118,11 @@ def main(name):
 
     # print (texts[0])
 
-    # dictionary = corpora.Dictionary(texts)
-    # corpus = [dictionary.doc2bow(text) for text in texts]
+    dictionary = corpora.Dictionary(texts)
+    corpus = [dictionary.doc2bow(text) for text in texts]
+    hdpmodel = models.HdpModel(corpus, id2word=dictionary)
+    hdpmodel.save(fname=("present/" + name))
+
     # # print (corpus[0])
     # tfidf = models.TfidfModel(corpus)
     # data = []
@@ -158,7 +161,7 @@ def main(name):
 if __name__ == '__main__':
     start_time = time.time()
     topic_num = 20
-    main(name='threshold_5-movies_all_small-len_100-topics_20-passes_30')
+    main(name='hdp-threshold_4-movies_all_small-len_100')
     print("total time: {} seconds".format(str(time.time()-start_time)))
 
     #need to test this with actual text documents
