@@ -105,7 +105,7 @@ def main(name):
     movie_id_to_rating = create_movie_id_to_rating(user_rating_history,movie_id_to_movie)  #movie id: [(user id, rating), etc]
 
     #active variables
-    texts = [i for i in create_document_list(movie_id_to_movie, movie_id_to_rating,user_rating_history, threshold=4) if len(i) >= 100]
+    # texts = [i for i in create_document_list(movie_id_to_movie, movie_id_to_rating,user_rating_history, threshold=4) if len(i) >= 100]
     # word_counter = {}
     # for word in texts[49]:
     #     if word in word_counter:
@@ -118,10 +118,28 @@ def main(name):
 
     # print (texts[0])
 
-    dictionary = corpora.Dictionary(texts)
-    corpus = [dictionary.doc2bow(text) for text in texts]
-    hdpmodel = models.HdpModel(corpus, id2word=dictionary)
-    hdpmodel.save(fname=("present/" + name))
+    # dictionary = corpora.Dictionary(texts)
+    # corpus = [dictionary.doc2bow(text) for text in texts]
+    # hdpmodel = models.HdpModel(corpus, id2word=dictionary)
+    # hdpmodel.save(fname_or_handle=("present/" + name))
+
+    hdpmodel = models.HdpModel.load(fname=("present/" + name))
+    # topics = hdpmodel.print_topics(num_topics=-1,num_words=6)
+    # with open('delete1','wb') as f:
+    #     for topic in topics:
+    #         f.write(str(topic) + '\n')
+    # hdpmodel = hdpmodel.optimal_ordering()
+    # print (hdpmodel)
+    topics = hdpmodel.print_topics(num_topics=-1,num_words=6)
+    with open('delete1','wb') as f:
+        for topic in topics:
+            f.write(str(topic) + '\n')
+
+
+
+
+
+
 
     # # print (corpus[0])
     # tfidf = models.TfidfModel(corpus)
