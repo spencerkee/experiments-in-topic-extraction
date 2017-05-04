@@ -122,65 +122,67 @@ def main(name):
     movie_id_to_movie = f.create_movie_id_to_movie()  # movie id: movie title
     # user id: [(movie id,movie rating), etc]
     user_rating_history = f.create_user_rating_history()
-    # print (user_rating_history)
     user_rating_history = center_user_ratings(user_rating_history)
-    # print (user_rating_history)
 
     movie_id_to_rating = f.create_movie_id_to_rating(
         user_rating_history, movie_id_to_movie)  # movie id: [(user id, rating), etc]
 
-    # active variables
     texts = [
         i for i in create_document_list(
             movie_id_to_movie,
             movie_id_to_rating,
             user_rating_history,
-            threshold=0.5) if len(i) >= 0]
-    # print (texts[0])
-
-    # word_counter = {}
-    # for word in texts[49]:
-    #     if word in word_counter:
-    #         word_counter[word] += 1
-    #     else:
-    #         word_counter[word] = 1
-    # popular_words = sorted(word_counter, key = word_counter.get, reverse = True)
-    # top = popular_words[:10]
-    # print(top)
-
-    # print (texts[0])
+            threshold=0) if len(i) >= 0]
 
     dictionary = corpora.Dictionary(texts)
     corpus = [dictionary.doc2bow(text) for text in texts]
-    # print (corpus[0])
-    # tfidf = models.TfidfModel(corpus)
-    # data = []
-    # for i in tfidf[corpus[0]]:
-    #     data.append([i[1],dictionary[i[0]]])
-    # data.sort(reverse=True)
-    # int(len(data)/4)
-    # print (data[:int(len(data)/4)])
-    # data.sort()
-    # print(data[:int(len(data)/4)])
 
-    # saving active variables
-    # variables = [texts,dictionary,corpus]
-    # pickle.dump(variables,open('active_variables/' + name + '-variables.p', "wb"))
-    # texts, dictionary, corpus = pickle.load(open('active_variables/threshold_5-movies_all_small-len_100-variables.p', 'rb'))
+    # running and saving models
+    # ldamodel = models.ldamodel.LdaModel(corpus, num_topics=topic_num, id2word = dictionary, passes=10)
+    # topics = ldamodel.show_topics(num_topics=topic_num, num_words=6)
+    # ldamodel.save(fname=("may_results/" + name))
 
-    # # running and saving models
-    ldamodel = models.ldamodel.LdaModel(corpus, num_topics=topic_num, id2word = dictionary, passes=10)
-    topics = ldamodel.show_topics(num_topics=topic_num, num_words=6)
-    ldamodel.save(fname=("present/" + name))
+    # hdpmodel = models.HdpModel(corpus, id2word=dictionary)
+    hdpmodel = models.hdpmodel.HdpModel.load(fname=("may_results/hdp-centered_threshold_0-movies_all_small-len_0"))
+    # topics = hdpmodel.print_topics(num_topics=-1,num_words=6)
+    # hdpmodel.save(fname_or_handle=("may_results/" + name))
+    # for i in topics:
+    #     print(i)
+
+    ids = sorted(movie_id_to_rating.keys())
+    data = []
+    for i in range(len(texts)):
+        vec = [0]*150
+        for feature in hdpmodel[corpus[i]]:
+            # try:
+            vec[feature[0]] = feature[1]
+            # except IndexError:
+            #     print('feature',feature)
+        row = [ids[i],movie_id_to_movie[ids[i]],vec]
+        data.append(row)
+        # print(hdpmodel[corpus[i]])
+        # print(len(texts[i]))
+        # if len(texts[i]) > 0:
+        #     print(hdpmodel[corpus[i]])
+
+    for i in data:
+        print(i)
+
 
     # ldamodel = models.ldamodel.LdaModel.load(fname=("active_variables/threshold_5-movies_all_small-len_100-topics_20-passes_20"))
     # ldamodel.update(corpus, passes=10)
     # ldamodel.save(fname=("active_variables/" + name))
     # topics = ldamodel.print_topics(num_topics=topic_num, num_words=6)
-    filename = 'present/' + name
-    with open(filename,'wb') as f:
-        for topic in topics:
-            f.write(str(topic[0]) + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
+
+
+    # don't think this works
+    # filename = 'present/' + name
+    # with open(filename,'wb') as f:
+    #     for topic in topics:
+    #         f.write(str(topic[0]) + ' ' + str(replace_movie_id_with_name(topic[1],movie_id_to_movie) + '\n'))
+
+
+
 
     # lm_list = evaluate_graph(dictionary, corpus, texts, 10, 101, 10)
     # lm_list_savename = 'current_results/' + name + '.p'
@@ -189,7 +191,7 @@ def main(name):
 if __name__ == '__main__':
     start_time = time.time()
     topic_num = 20
-    main(name='centered_threshold_05-movies_all_small-len_0-topics_20-passes_30')
+    main(name='hdp-centered_threshold_0-movies_all_small-len_0')
     print("total time: {} seconds".format(str(time.time() - start_time)))
 
     # need to test this with actual text documents

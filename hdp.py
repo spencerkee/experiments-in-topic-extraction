@@ -123,7 +123,7 @@ def main(name):
     # hdpmodel = models.HdpModel(corpus, id2word=dictionary)
     # hdpmodel.save(fname_or_handle=("present/" + name))
 
-    hdpmodel = models.HdpModel.load(fname=("present/" + name))
+    # hdpmodel = models.HdpModel.load(fname=("present/" + name))
     # topics = hdpmodel.print_topics(num_topics=-1,num_words=6)
     # with open('delete1','wb') as f:
     #     for topic in topics:
